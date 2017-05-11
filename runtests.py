@@ -38,7 +38,13 @@ DEFAULT_SETTINGS = dict(
         )
     ),
     # ROOT_URLCONF = 'djangodav.tests.urls',
-    MIDDLEWARE_CLASSES = ()
+    MIDDLEWARE_CLASSES = (),
+    TEMPLATES = (
+        dict(
+            BACKEND = 'django.template.backends.django.DjangoTemplates',
+            APP_DIRS = True
+        ),
+    )
 )
 
 

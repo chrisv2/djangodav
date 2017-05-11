@@ -1,4 +1,7 @@
 import urllib, re
+
+from django.utils.encoding import force_text
+
 try:
     import urlparse
 except ImportError:
@@ -15,6 +18,7 @@ from django.utils.http import parse_etags
 from django.shortcuts import render_to_response
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import View
+from django.utils import six
 
 from djangodav.responses import ResponseException, HttpResponsePreconditionFailed, HttpResponseCreated, HttpResponseNoContent, \
     HttpResponseConflict, HttpResponseMediatypeNotSupported, HttpResponseBadGateway, \
@@ -247,7 +251,13 @@ class DavView(View):
             raise Http404("Resource doesn't exists")
         if not self.has_access(self.resource, 'read'):
             return self.no_access()
-        dst = urlparse.unquote(request.META.get('HTTP_DESTINATION', '')).decode(self.xml_encoding)
+        if six.PY2:
+            # in Python 2.6, urlparse requires bytestrings
+            dst = urlparse.unquote(request.META.get('HTTP_DESTINATION', '')).decode(self.xml_encoding)
+        else:
+            # in Python 3, urlparse understands string
+            dst = urlparse.unquote(request.META.get('HTTP_DESTINATION', ''))
+
         if not dst:
             return HttpResponseBadRequest('Destination header missing.')
         dparts = urlparse.urlparse(dst)
@@ -339,7 +349,7 @@ class DavView(View):
         body = D.activelock(*([
             D.locktype(locktype_obj),
             D.lockscope(lockscope_obj),
-            D.depth(unicode(depth)),
+            D.depth(force_text(depth)),
             D.timeout("Second-%s" % timeout),
             D.locktoken(D.href('opaquelocktoken:%s' % token))]
             + ([owner_obj] if owner_obj is not None else [])

@@ -40,6 +40,7 @@ class TestBaseDavResource(TestCase):
     def test_get_path_object(self):
         self.assertEqual(self.resource.get_path(), '/path/to/name')
 
+    @patch('djangodav.base.resources.BaseDavResource.is_collection', True)
     @patch('djangodav.base.resources.BaseDavResource.get_children', Mock(return_value=[]))
     def test_get_descendants(self):
         self.assertEqual(list(self.resource.get_descendants(depth=1, include_self=True)), [self.resource])

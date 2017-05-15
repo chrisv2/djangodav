@@ -288,13 +288,13 @@ class DavView(View):
             return HttpResponseNoContent()
         return HttpResponseCreated()
 
-    def copy(self, request, path, xbody):
+    def copy(self, request, path, xbody, *args, **kwargs):
         depth = self.get_depth()
         if depth != -1:
             return HttpResponseBadRequest()
         return self.relocate(request, path, 'copy', depth=depth)
 
-    def move(self, request, path, xbody):
+    def move(self, request, path, xbody, *args, **kwargs):
         if not self.has_access(self.resource, 'delete'):
             return self.no_access()
         return self.relocate(request, path, 'move')

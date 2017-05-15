@@ -57,14 +57,17 @@ class DavView(View):
 
         meta = request.META.get
         self.xbody = kwargs['xbody'] = None
-        if (request.method.lower() != 'put'
-            and "/xml" in meta('CONTENT_TYPE', '')
-            and meta('CONTENT_LENGTH', 0) != ''
-            and int(meta('CONTENT_LENGTH', 0)) > 0):
-            self.xbody = kwargs['xbody'] = etree.XPathDocumentEvaluator(
-                etree.parse(request, etree.XMLParser(ns_clean=True)),
-                namespaces=WEBDAV_NSMAP
-            )
+        try:
+            if (request.method.lower() != 'put'
+                # and "/xml" in meta('CONTENT_TYPE', '')
+                and meta('CONTENT_LENGTH', 0) != ''
+                and int(meta('CONTENT_LENGTH', 0)) > 0):
+                self.xbody = kwargs['xbody'] = etree.XPathDocumentEvaluator(
+                    etree.parse(request, etree.XMLParser(ns_clean=True)),
+                    namespaces=WEBDAV_NSMAP
+                )
+        except etree.ParseError:
+            return HttpResponseBadRequest("invalid XML in body")
 
         if request.method.upper() in self._allowed_methods():
             handler = getattr(self, request.method.lower(), self.http_method_not_allowed)

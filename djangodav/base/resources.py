@@ -71,7 +71,7 @@ class BaseDavResource(object):
         # If depth is less than 0, then it started out as -1.
         # We need to keep recursing until we hit 0, or forever
         # in case of infinity.
-        if depth != 0:
+        if depth != 0 and self.is_collection:
             for child in self.get_children():
                 for desc in child.get_descendants(depth=depth-1, include_self=True):
                     yield desc

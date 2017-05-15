@@ -46,7 +46,7 @@ setup(
         'Topic :: Software Development :: Libraries :: Python Modules'
     ],
     install_requires=["lxml", "Django>=1.3.0"],
-    tests_require=["Django>=1.3.0", "mock==1.0.1"],
+    tests_require=["Django>=1.3.0", "mock==1.0.1", "djangorestframework==3.6.2"],
     include_package_data=True,
     zip_safe=False,
     test_suite='runtests.runtests'
